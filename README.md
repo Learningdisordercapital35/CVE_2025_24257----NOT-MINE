@@ -2,7 +2,7 @@
 
 **IOGPUFamily bitmap_mask underflow — kernel heap OOB write**
 
-First public PoC. Original discovery by [Wang Yu](https://twitter.com/9iclr) of Cyberserval.
+First public PoC. Original discovery by [Wang Yu] of Cyberserval.
 
 ## Vulnerability
 
@@ -97,7 +97,6 @@ Apple fixed this in iOS 18.4 by adding a minimum capacity check, ensuring `capac
 
 - **Vulnerability Discovery**: Wang Yu of Cyberserval
 - **PoC Development**: CrazyMind90 (with Claude Code)
-- **Apple Advisory**: [HT210346](https://support.apple.com/en-us/HT210346)
 
 ## Disclaimer
 
